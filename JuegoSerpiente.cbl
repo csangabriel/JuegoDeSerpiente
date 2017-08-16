@@ -15,18 +15,21 @@
        01  WS-CONTADOR            PIC 99 VALUE ZERO.
        01  WS-MOVIMIENTO          PIC A  VALUE ' '.
        01  WS-INDICE              PIC 99 VALUE ZEROS.
+       01  WS-LARGO               PIC 99.
+       01  WS-SALTOS              PIC 99.
 
-
-       01  WS-CUERPO OCCURS 99 TIMES INDEXED BY WS-INDICE.
-           05 WS-CABEZA           PIC X.
-           05 WS-LARGO            PIC X.
-
+       01  WS-SERPIENTE OCCURS 100 TIMES INDEXED BY WS-INDICE.
+           05 WS-CUADRO           PIC 99.
+           05 WS-POS-X            PIC 99.
+           05 WS-POS-Y            PIC 99.
+           05 WS-CUERPO           PIC XX VALUE "  ".
 
        SCREEN SECTION.
 
-       01  SS-O FOREGROUND-COLOR 04 HIGHLIGHT.
-           05 LINE WS-Y COL WS-X VALUE "O".
-      *     05 PIC X USING WS-PAUSA.
+       01  SS-O BACKGROUND-COLOR IS 02 HIGHLIGHT.
+           05 LINE WS-Y COL WS-X VALUE "  ".
+
+
        01  SS-LIMPIAR-PANTALLA.
            05 BLANK SCREEN.
 
@@ -36,11 +39,16 @@
 
        000-INICIO.
 
-           PERFORM UNTIL WS-CONTADOR =50
-               ADD 1 TO WS-CONTADOR
+           PERFORM UNTIL WS-CONTADOR = 50
+               ADD 3 TO WS-CONTADOR
                DISPLAY SS-O LINE WS-Y COL WS-CONTADOR
+               MOVE WS-Y TO WS-POS-Y(1)
+               MOVE WS-CONTADOR TO WS-POS-X(1)
                ACCEPT WS-MOVIMIENTO LINE 1 COL 1 TIME 1
                DISPLAY SS-LIMPIAR-PANTALLA
+
+               PERFORM 400-CUERPO-SERPIENTE THRU 400-FIN
+
                IF WS-MOVIMIENTO = 'K' OR 'k'
                    PERFORM 100-ABAJO THRU 100-FIN
                ELSE IF WS-MOVIMIENTO = "I" OR "i"
@@ -56,8 +64,12 @@
            PERFORM UNTIL WS-CONTADOR = 50
            ADD 1 TO WS-Y
            DISPLAY SS-O LINE WS-Y COL WS-CONTADOR
+           MOVE WS-Y TO WS-POS-Y(1)
+               MOVE WS-CONTADOR TO WS-POS-X(1)
            ACCEPT WS-MOVIMIENTO LINE 1 COL 1 TIME 1
            DISPLAY SS-LIMPIAR-PANTALLA
+           PERFORM 400-CUERPO-SERPIENTE THRU 400-FIN
+
            IF WS-MOVIMIENTO = "L" OR  "l"
                PERFORM 000-INICIO THRU 000-FIN
            ELSE IF WS-MOVIMIENTO = "J" OR "j"
@@ -66,11 +78,10 @@
 
        100-FIN. EXIT.
 
-
        200-IZQUIERDA.
 
            PERFORM UNTIL WS-CONTADOR = 50
-           SUBTRACT 1 FROM WS-CONTADOR
+           SUBTRACT 3 FROM WS-CONTADOR
            DISPLAY SS-O LINE WS-Y COL WS-CONTADOR
            ACCEPT WS-MOVIMIENTO LINE 1 COL 1 TIME 1
            DISPLAY SS-LIMPIAR-PANTALLA
@@ -96,3 +107,15 @@
            END-PERFORM.
 
        300-FIN. EXIT.
+
+
+       400-CUERPO-SERPIENTE.
+
+           DISPLAY SS-O LINE WS-POS-Y(1)  COL WS-POS-X(1).
+           MOVE WS-POS-Y(1) TO WS-POS-Y(2).
+           MOVE WS-POS-X(1) TO WS-POS-X(2).
+
+      *     DISPLAY SS-O LINE WS-POS-X(2) COL WS-POS-Y(2).
+
+
+       400-FIN. EXIT.
